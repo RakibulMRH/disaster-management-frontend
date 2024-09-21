@@ -1,0 +1,63 @@
+<div class="container-fluid mt-5">
+  <!-- Top-right: Login and Register buttons -->
+  <div class="d-flex justify-content-end mb-4">
+    <a [routerLink]="['/login']" class="btn btn-primary me-2">Login</a>
+    <a [routerLink]="['/register']" class="btn btn-secondary">Register</a>
+  </div>
+
+  <div class="row">
+    <!-- Left Column: Total Donated Funds -->
+    <div class="col-md-4 mb-4" style="height: 100vh; overflow-y: auto;">
+      <div class="card h-100">
+        <div class="card-body">
+          <h3 class="card-title">Total Donated Funds</h3>
+          <p class="card-text display-4">{{ totalDonations | currency }}</p>
+          <button (click)="navigateToDonation()" class="btn btn-link">Go to Donation Page</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Daily Expenses and Donations Chart -->
+    <div class="col-md-8 mb-4">
+      <div class="card h-10">
+        <div class="card-body">
+          <h3 class="card-title">Daily Expenses and Donations</h3>
+          <div class="chart-section" style="height: 300px; overflow-x: auto;">
+            <canvas id="fundsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Crises and Available Volunteers -->
+      <div class="row mt-4">
+        <div class="col-md-6 mb-4" style="height: 50vh; overflow-y: auto;">
+          <div class="card h-100">
+            <div class="card-body">
+              <h3 class="card-title">Recent Crises</h3>
+              <ul class="list-group list-group-flush">
+                <li *ngFor="let crisis of crises" class="list-group-item">
+                  {{ crisis.title }} ({{ crisis.severity }})
+                </li>
+              </ul>
+              <button (click)="navigateToCrisis()" class="btn btn-link mt-3">Go to Crisis Page</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-4" style="height: 50vh; overflow-y: auto;">
+          <div class="card h-100">
+            <div class="card-body">
+              <h3 class="card-title">Available Volunteers</h3>
+              <ul class="list-group list-group-flush">
+                <li *ngFor="let volunteer of volunteers" class="list-group-item">
+                  {{ volunteer.name }} ({{ volunteer.age }})
+                </li>
+              </ul>
+              <button (click)="navigateToVolunteer()" class="btn btn-link mt-3">Go to Volunteer Page</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

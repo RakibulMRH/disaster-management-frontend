@@ -1,0 +1,13 @@
+.top-right {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}
+
+.btn {
+  margin: 5px;
+}
+
+.fund-section, .chart-section, .crisis-section, .volunteer-section {
+  margin: 20px 0;
+}
