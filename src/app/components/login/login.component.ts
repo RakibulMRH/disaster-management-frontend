@@ -14,7 +14,7 @@ export class LoginComponent {
   usernameOrEmail: string = '';
   password: string = '';
   errorMessage: string | null = null; // Property to store error messages
-
+  currentPage: string = 'login';
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {

@@ -1,0 +1,146 @@
+<div class="container-fluid py-5 bg-light">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary ">Donation Page</h2>
+    <button class="btn btn-outline-primary" [routerLink]="'/home'">
+      <i class="fas fa-dollar-sign me-2"></i> Home
+    </button>
+  </div>
+  <div class="row g-4">
+    <!-- Left Column: All-Time Donations -->
+    <div class="col-lg-4">
+      <div class="card h-100 shadow-sm rounded">
+        <div class="card-body">
+          <h4 class="card-title text-success mb-4">
+            <i class="fas fa-hand-holding-usd me-2"></i> All-Time Donations
+          </h4>
+          <div *ngIf="isLoadingDonations" class="text-center my-5">
+            <div class="spinner-border text-success" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          <div class="donation-list" style="max-height: 60vh; overflow-y: auto;">
+            <ul class="list-group list-group-flush" *ngIf="!isLoadingDonations">
+              <li *ngFor="let donation of donations" class="list-group-item border-0 mb-3 bg-white rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="mb-0">{{ donation.donorName || 'Anonymous' }}</h6>
+                    <p class="text-muted mb-0 small">{{ donation.crisis?.title || 'a recent crisis' }}</p>
+                  </div>
+                  <div class="text-end">
+                    <span class="badge bg-success rounded-pill">{{ donation.amount | currency:'৳' }}</span>
+                    <p class="text-muted mb-0 small">{{ donation.dateDonated | date:'short' }}</p>
+                  </div>
+                </div>
+              </li>
+              <li *ngIf="donations.length === 0" class="list-group-item text-center">
+                <p class="text-muted mb-0">No donations yet.</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle Column: Donation Form -->
+    <div class="col-lg-4">
+      <div class="card h-100 shadow-sm rounded">
+        <div class="card-body">
+          <h4 class="card-title text-primary mb-4">
+            <i class="fas fa-dollar-sign me-2"></i> Make a Donation
+          </h4>
+          <form #donationForm="ngForm" (ngSubmit)="onSubmit(donationForm)" class="needs-validation" novalidate>
+            <div class="mb-3">
+              <label for="donorName" class="form-label">Your Name</label>
+              <input type="text" id="donorName" name="donorName" class="form-control" required [(ngModel)]="donorName">
+            </div>
+
+            <div class="mb-3">
+              <label for="amount" class="form-label">Amount (৳)</label>
+              <div class="input-group">
+                <span class="input-group-text">৳</span>
+                <input type="number" id="amount" name="amount" class="form-control" required min="1" [(ngModel)]="amount">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="crisis" class="form-label">Select Crisis<span class="text-danger">*</span></label>
+              <select id="crisis" name="crisis" class="form-select" required [(ngModel)]="selectedCrisisId" [disabled]="isLoadingCrises">
+                <option value="" disabled selected *ngIf="!isLoadingCrises">Select a crisis</option>
+                <option *ngFor="let crisis of crises" [value]="crisis.id">{{ crisis.title }}</option>
+              </select>
+              <div *ngIf="isLoadingCrises" class="text-center my-2">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="notes" class="form-label">Notes</label>
+              <textarea id="notes" name="notes" class="form-control" rows="3" [(ngModel)]="notes"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fas fa-paper-plane me-2"></i> Donate
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Bar Chart and Crisis Progress Bars -->
+    <div class="col-lg-4">
+      <div class="card mb-4 shadow-sm rounded">
+        <div class="card-body">
+          <h4 class="card-title text-info mb-4">
+            <i class="fas fa-chart-bar me-2"></i> Daily Donations & Expenses
+          </h4>
+          <div class="position-relative" style="height: 300px;">
+            <div *ngIf="isLoadingChart" class="position-absolute top-50 start-50 translate-middle">
+              <div class="spinner-border text-info" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+            <canvas #fundsChart></canvas>
+          </div>
+          <div *ngIf="!isLoadingChart && (chart === undefined)" class="text-center text-muted">
+            <p>No chart data available.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm rounded">
+        <div class="card-body">
+          <h4 class="card-title text-warning mb-4">
+            <i class="fas fa-tasks me-2"></i> Crisis Fund Progress
+          </h4>
+          <div *ngIf="crises.length === 0 && !isLoadingCrises" class="text-center text-muted">
+            <p>No crises available.</p>
+          </div>
+          <div *ngFor="let crisis of crises" class="mb-4">
+            <h6 class="mb-2">{{ crisis.title }}</h6>
+            <div class="d-flex justify-content-between mb-1">
+              <span>{{ crisisFunds[crisis.id] | currency:'৳' }}</span>
+              <span>{{ crisisGoals[crisis.id] | currency:'৳' }}</span>
+            </div>
+            <div class="progress" style="height: 10px;">
+              <div
+                class="progress-bar progress-bar-striped progress-bar-animated"
+                role="progressbar"
+                [style.width.%]="getProgress(crisis.id)"
+                [ngClass]="{
+                  'bg-success': getProgress(crisis.id) >= 70,
+                  'bg-warning': getProgress(crisis.id) >= 30 && getProgress(crisis.id) < 70,
+                  'bg-danger': getProgress(crisis.id) < 30
+                }"
+                [attr.aria-valuenow]="getProgress(crisis.id)"
+                aria-valuemin="0"
+                aria-valuemax="100">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

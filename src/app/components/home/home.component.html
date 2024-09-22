@@ -1,140 +1,144 @@
-<div class="container-fluid py-">
+<div class="container-fluid p-0">
   <!-- Hero Section -->
-  <div class="row justify-content-center text-center mb-15" style="background-color: #387bc7;">
-    <div class="col-lg-10">
-      <h1 class="display-4 text-white fw-bold mb-3 mt-5" style="text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);">
-        Disaster Relief & Crisis Management
-      </h1>
-      <p class="lead text-center mb-4 text-white" style="text-shadow: 1px 1px 6px rgba(240, 232, 232, 0.4);">
-        Join us in helping those affected by disasters. Whether you're donating, volunteering, or reporting a crisis, your action counts.
-      </p>
-      <div class="d-flex justify-content-center">
-        <a [routerLink]="['/donation']" class="btn btn-lg btn-success mx-2 px-4 py-2" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
-          <i class="fas fa-hand-holding-usd me-2"></i> Donate Now
-        </a>
-        <a [routerLink]="['/register']" class="btn btn-lg btn-warning mx-2 px-4 py-2" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
-          <i class="fas fa-users me-2"></i> Join as Volunteer
-        </a>
-        <a [routerLink]="['/crisis']" class="btn btn-lg btn-danger mx-2 px-4 py-2" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
-          <i class="fas fa-exclamation-circle me-2"></i> Report a Crisis
-        </a>
-        <a [routerLink]="['/login']" class="btn btn-lg btn-primary mx-2 px-4 py-2" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
-          <i class="fas fa-exclamation-circle me-2"></i> Login
-        </a>
+  <div class="hero-section position-relative overflow-hidden py-5 mb-5">
+    <div class="hero-bg position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, #387bc7, #2c3e50); z-index: -1;"></div>
+    <div class="container position-relative z-1">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-10">
+          <h1 class="display-3 text-white fw-bold mb-4 animate__animated animate__fadeInDown">
+            Disaster Relief & Crisis Management
+          </h1>
+          <p class="lead text-white mb-5 animate__animated animate__fadeInUp">
+            Join us in helping those affected by disasters. Whether you're donating, volunteering, or reporting a crisis, your action counts.
+          </p>
+          <div class="d-flex flex-wrap justify-content-center gap-3 mb-5 animate__animated animate__fadeInUp">
+            <a [routerLink]="['/donation']" class="btn btn-lg btn-success px-4 py-3 rounded-pill">
+              <i class="fas fa-hand-holding-usd me-2"></i> Donate Now
+            </a>
+            <a [routerLink]="['/register']" class="btn btn-lg btn-warning px-4 py-3 rounded-pill">
+              <i class="fas fa-users me-2"></i> Join as Volunteer
+            </a>
+            <a [routerLink]="['/crisis']" class="btn btn-lg btn-danger px-4 py-3 rounded-pill">
+              <i class="fas fa-exclamation-circle me-2"></i> Report a Crisis
+            </a>
+            <a [routerLink]="['/login']" class="btn btn-lg btn-light px-4 py-3 rounded-pill">
+              <i class="fas fa-sign-in-alt me-2"></i> Login
+            </a>
+          </div>
+        </div>
       </div>
 
-  <!-- Impact Section -->
-  <div class="row text-center py-2 mt-4" style=" color: white;">
-    <div class="col">
-      <h3 class="display-5">{{ totalDonations | currency:'৳' }}</h3>
-      <p>Total Donated Funds</p>
-    </div>
-    <div class="col ">
-      <h3 class="display-5">{{ totalVolunteers }}</h3>
-      <p>Active Volunteers</p>
-    </div>
-    <div class="col ">
-      <h3 class="display-5">{{ crises.length }}</h3>
-      <p>Reported Crises</p>
+      <!-- Impact Section -->
+      <div class="row text-center mt-5">
+        <div class="col-md-4 mb-4 mb-md-0">
+          <div class="impact-item p-4 bg-white bg-opacity-10 rounded-lg backdrop-blur-sm">
+            <h3 class="display-4 text-white mb-2">{{ totalDonations | currency:'৳' }}</h3>
+            <p class="text-white mb-0">Total Donated Funds</p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4 mb-md-0">
+          <div class="impact-item p-4 bg-white bg-opacity-10 rounded-lg backdrop-blur-sm">
+            <h3 class="display-4 text-white mb-2">{{ totalVolunteers }}</h3>
+            <p class="text-white mb-0">Active Volunteers</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="impact-item p-4 bg-white bg-opacity-10 rounded-lg backdrop-blur-sm">
+            <h3 class="display-4 text-white mb-2">{{ crises.length }}</h3>
+            <p class="text-white mb-0">Reported Crises</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  </div>
-</div>
-  <div class="row py-5">
-    <!-- Recent Crises Section -->
-    <div class="col-lg-6 mb-4">
-      <div class="card h-100 shadow-sm rounded" style="background-color: #f8f9fa;">
-        <div class="card-body">
-          <h3 class="card-title text-danger">
-            <i class="fas fa-exclamation-circle me-2"></i> Recent Crises
-          </h3>
-          <div style="max-height: 100%; overflow-y: auto;">
-            <ul class="list-group list-group-flush">
-              <li *ngFor="let crisis of crises" class="list-group-item" style="background-color: #fff;">
+
+  <div class="container">
+    <div class="row py-5">
+      <!-- Recent Crises Section -->
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-lg rounded-lg border-0">
+          <div class="card-body">
+            <h3 class="card-title text-danger mb-4">
+              <i class="fas fa-exclamation-circle me-2"></i> Recent Crises
+            </h3>
+            <div class="crisis-list" style="max-height: 500px; overflow-y: auto;">
+              <div *ngFor="let crisis of crises" class="crisis-item mb-4 p-3 bg-light rounded-lg">
                 <div class="d-flex align-items-center">
-                  <!-- Crisis Image (Placeholder if imageUrl is null) -->
-                  <img [src]="crisis.imageUrl || 'https://via.placeholder.com/100'" alt="{{ crisis.title }}"
-                    class="me-3" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%;">
-
-                  <!-- Crisis Details -->
+                  <img [src]="crisis.imageUrl || 'https://via.placeholder.com/100'" [alt]="crisis.title"
+                    class="me-3 rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
                   <div>
-                    <strong class="h5">{{ crisis.title }}</strong>
-                    <p>{{ crisis.description }}</p>
-                    <p><strong>Location:</strong> {{ crisis.location }}</p>
-
-                    <!-- Severity with Color Coding -->
-                    <p>
+                    <h4 class="h5 mb-2">{{ crisis.title }}</h4>
+                    <p class="mb-2">{{ crisis.description }}</p>
+                    <p class="mb-2"><strong>Location:</strong> {{ crisis.location }}</p>
+                    <p class="mb-0">
                       <strong>Severity:</strong>
-                      <span [ngClass]="{
-                        'text-success fw-bold': crisis.severity === 'low',
-                        'text-warning fw-bold': crisis.severity === 'medium',
-                        'text-danger fw-bold': crisis.severity === 'high',
-                        'text-alert-danger fw-bold': crisis.severity === 'critical'
+                      <span class="badge" [ngClass]="{
+                        'bg-success': crisis.severity === 'low',
+                        'bg-warning': crisis.severity === 'medium',
+                        'bg-danger': crisis.severity === 'high',
+                        'bg-dark': crisis.severity === 'critical'
                       }">
                         {{ crisis.severity | titlecase }}
                       </span>
                     </p>
                   </div>
                 </div>
-              </li>
-            </ul>
+              </div>
+            </div>
+            <button (click)="navigateToCrisis()" class="btn btn-outline-danger mt-3 w-100">
+              See All Crises
+            </button>
           </div>
-          <button (click)="navigateToCrisis()" class="btn btn-danger mt-3 text-decoration-none">
-            See All Crises
-          </button>
         </div>
       </div>
-    </div>
 
-    <!-- Available Volunteers Section -->
-    <div class="col-lg-6 mb-4">
-      <div class="card h-100 shadow-sm rounded" style="background-color: #f8f9fa;">
-        <div class="card-body">
-          <h3 class="card-title text-info">
-            <i class="fas fa-chart-line me-2"></i> Daily Donations & Expenses
-          </h3>
-          <div class="d-flex justify-content-center">
-            <div class="chart-container" style="height: 300px; width: 100%; max-width: 100%; overflow-x: auto;">
+      <!-- Donations Chart and Available Volunteers Section -->
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-lg rounded-lg border-0">
+          <div class="card-body">
+            <h3 class="card-title text-info mb-4">
+              <i class="fas fa-chart-line me-2"></i> Daily Donations & Expenses
+            </h3>
+            <div class="chart-container mb-5" style="height: 300px;">
               <canvas id="fundsChart"></canvas>
             </div>
+            <h3 class="card-title text-warning mb-4">
+              <i class="fas fa-users me-2"></i> Available Volunteers
+            </h3>
+            <div class="volunteer-list" style="max-height: 300px; overflow-y: auto;">
+              <div *ngFor="let volunteer of volunteers" class="volunteer-item mb-3 p-3 bg-light rounded-lg">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 class="mb-1">{{ volunteer.name }}</h5>
+                    <p class="mb-0 text-muted">{{ volunteer.phoneNumber || 'N/A' }}</p>
+                  </div>
+                  <a [routerLink]="['/volunteer', volunteer.id]" class="btn btn-sm btn-outline-primary">
+                    View Details
+                  </a>
+                </div>
+              </div>
+            </div>
+            <button (click)="navigateToVolunteer()" class="btn btn-outline-warning mt-3 w-100">
+              See All Volunteers
+            </button>
           </div>
-          <h3 class="card-title text-warning mt-4">
-            <i class="fas fa-users me-2"></i> Available Volunteers
-          </h3>
-          <div style="max-height: 100%; overflow-y: auto;">
-            <ul class="list-group list-group-flush">
-              <ng-container *ngFor="let volunteer of volunteers">
-                <li *ngIf="volunteer.status === 'unassigned'" class="list-group-item" style="background-color: #fff;">
-                  <div>
-                    <strong>Name:</strong> {{ volunteer.name }}
-                  </div>
-                  <div>
-                    <strong>Phone:</strong> {{ volunteer.phoneNumber || 'N/A' }}
-                  </div>
-                  <div>
-                    <a [routerLink]="['/volunteer', volunteer.id]" class="small text-decoration-none">
-                      View Details
-                    </a>
-                  </div>
-                </li>
-              </ng-container>
-            </ul>
-          </div>
-          <button (click)="navigateToVolunteer()" class="btn btn-warning mt-3 text-decoration-none">
-            See All Volunteers
-          </button>
         </div>
       </div>
     </div>
+  </div>
 
-  <!-- Bottom Section: Footer/Call-to-Action -->
-  <div class="row justify-content-center text-center py-5" style="background-color: #e9ecef;">
-    <div class="col-lg-8">
-      <h2 class="fw-bold text-primary">Ready to Make a Difference?</h2>
-      <p class="lead text-muted mb-4">Join our community of volunteers, donors, and crisis responders. Together, we can bring relief to those in need.</p>
-      <a [routerLink]="['/register']" class="btn btn-lg btn-primary px-5 py-3" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);">
-        Join Us Now
-      </a>
+  <!-- Call-to-Action Section -->
+  <div class="cta-section py-5 bg-light">
+    <div class="container">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-8">
+          <h2 class="display-4 fw-bold text-primary mb-4">Ready to Make a Difference?</h2>
+          <p class="lead text-muted mb-5">Join our community of volunteers, donors, and crisis responders. Together, we can bring relief to those in need.</p>
+          <a [routerLink]="['/register']" class="btn btn-primary btn-lg px-5 py-3 rounded-pill animate__animated animate__pulse animate__infinite">
+            Join Us Now
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </div>

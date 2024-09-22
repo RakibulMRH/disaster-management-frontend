@@ -1,0 +1,43 @@
+/* src/app/components/donation/donation.component.css */
+
+/* Customize card styles */
+.card {
+  border: none;
+}
+
+/* Customize progress bar text color */
+.progress-bar {
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Optional: Add hover effects to donation list items */
+.list-group-item:hover {
+  background-color: #e9ecef;
+  cursor: pointer;
+}
+
+/* Style the donation form labels */
+form .form-label {
+  font-weight: 500;
+}
+
+/* Style the donation form buttons */
+form .btn-primary {
+  transition: background-color 0.3s ease;
+}
+
+form .btn-primary:hover {
+  background-color: #0069d9; /* Darker blue on hover */
+}
+
+/* Adjust the chart container */
+canvas {
+  width: 100% !important;
+  height: 300px !important;
+}
+
+/* Ensure position-relative for the chart container */
+.position-relative {
+  position: relative;
+}
