@@ -1,61 +1,96 @@
 <div class="container-fluid mt-5">
-  <!-- Top-right: Login and Register buttons -->
+  <!-- Top-right: Login and Register buttons with icons -->
   <div class="d-flex justify-content-end mb-4">
-    <a [routerLink]="['/login']" class="btn btn-primary me-2">Login</a>
-    <a [routerLink]="['/register']" class="btn btn-secondary">Register</a>
+    <a [routerLink]="['/login']" class="btn btn-primary me-2 d-flex align-items-center">
+      <i class="fas fa-sign-in-alt me-2"></i> Login
+    </a>
+    <a [routerLink]="['/register']" class="btn btn-secondary d-flex align-items-center">
+      <i class="fas fa-user-plus me-2"></i> Register
+    </a>
   </div>
 
   <div class="row">
-    <!-- Left Column: Total Donated Funds -->
-    <div class="col-md-4 mb-4" style="height: 100vh; overflow-y: auto;">
-      <div class="card h-100">
+    <!-- Left Column: Recent Crises Section -->
+    <div class="col-md-6 mb-4" style="height: 100%; overflow-y: auto;">
+      <div class="card h-100 shadow-sm rounded">
         <div class="card-body">
-          <h3 class="card-title">Total Donated Funds</h3>
-          <p class="card-text display-4">{{ totalDonations | currency }}</p>
-          <button (click)="navigateToDonation()" class="btn btn-link">Go to Donation Page</button>
+          <h3 class="card-title"><i class="fas fa-exclamation-circle me-2"></i>Recent Crises</h3>
+          <ul class="list-group list-group-flush">
+            <li *ngFor="let crisis of crises" class="list-group-item">
+              <div class="d-flex">
+                <!-- Crisis Image (Placeholder if imageUrl is null) -->
+                <img [src]="crisis.imageUrl || 'https://via.placeholder.com/100'" alt="{{ crisis.title }}" class="me-3" style="width: 100px; height: 100px; object-fit: cover;">
+
+                <!-- Crisis Details -->
+                <div class="crisis-details">
+                  <strong class="h5">{{ crisis.title }}</strong>
+                  <p>{{ crisis.description }}</p>
+                  <p><strong>Help Required:</strong> {{ crisis.requiredHelp }}</p>
+                  <p><strong>Location:</strong> {{ crisis.location }}</p>
+
+                  <!-- Severity with Color Coding -->
+                  <p>
+                    <strong>Severity:</strong><b>
+                    <span [ngClass]="{
+                      'text-success fw-bold': crisis.severity === 'low',
+                      'text-warning fw-bold': crisis.severity === 'medium',
+                      'text-danger fw-bold': crisis.severity === 'high',
+                      'text-danger fw-bold': crisis.severity === 'critical'
+                    }">
+                      {{ crisis.severity | titlecase }}
+                    </span>
+                  </b></p>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <button (click)="navigateToCrisis()" class="btn btn-link mt-3 text-decoration-none">Go to Crisis Page</button>
         </div>
       </div>
     </div>
 
-    <!-- Right Column: Daily Expenses and Donations Chart -->
-    <div class="col-md-8 mb-4">
-      <div class="card h-10">
+    <!-- Right Column: Daily Expenses and Donations Chart and Total Donations -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm rounded">
         <div class="card-body">
-          <h3 class="card-title">Daily Expenses and Donations</h3>
-          <div class="chart-section" style="height: 300px; overflow-x: auto;">
-            <canvas id="fundsChart"></canvas>
+          <!-- Donation Amount Next to the Chart -->
+          <div class="text-center">
+            <h5>Total Donated Funds</h5>
+            <p class="card-text display-6 text-success">{{ totalDonations | currency:'৳' }}</p>
           </div>
+          <h3 class="card-title"><i class="fas fa-chart-bar me-2"></i>Daily Expenses and Donations</h3>
+          <div class="d-flex justify-content-center">
+            <div class="chart-section" style="height: 300px; width: 100%; max-width: 600px; overflow-x: auto;">
+              <canvas id="fundsChart"></canvas>
+            </div>
+          </div>
+
+
         </div>
       </div>
 
-      <!-- Recent Crises and Available Volunteers -->
-      <div class="row mt-4">
-        <div class="col-md-6 mb-4" style="height: 50vh; overflow-y: auto;">
-          <div class="card h-100">
-            <div class="card-body">
-              <h3 class="card-title">Recent Crises</h3>
-              <ul class="list-group list-group-flush">
-                <li *ngFor="let crisis of crises" class="list-group-item">
-                  {{ crisis.title }} ({{ crisis.severity }})
-                </li>
-              </ul>
-              <button (click)="navigateToCrisis()" class="btn btn-link mt-3">Go to Crisis Page</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6 mb-4" style="height: 50vh; overflow-y: auto;">
-          <div class="card h-100">
-            <div class="card-body">
-              <h3 class="card-title">Available Volunteers</h3>
-              <ul class="list-group list-group-flush">
-                <li *ngFor="let volunteer of volunteers" class="list-group-item">
-                  {{ volunteer.name }} ({{ volunteer.age }})
-                </li>
-              </ul>
-              <button (click)="navigateToVolunteer()" class="btn btn-link mt-3">Go to Volunteer Page</button>
-            </div>
-          </div>
+      <!-- Available Volunteers Section -->
+      <div class="card h-10 shadow-sm rounded mt-4" style="height: 50vh; overflow-y: auto;">
+        <div class="card-body">
+          <h3 class="card-title"><i class="fas fa-users me-2"></i>Available Volunteers</h3>
+          <ul class="list-group list-group-flush">
+            <ng-container *ngFor="let volunteer of volunteers">
+              <li *ngIf="volunteer.status === 'unassigned'" class="list-group-item">
+                <div>
+                  <strong>Name:</strong> {{ volunteer.name }}
+                </div>
+                <div>
+                  <strong>Phone:</strong> {{ volunteer.phoneNumber || 'N/A' }}
+                </div>
+                <div>
+                  <a [routerLink]="['/volunteer', volunteer.id]" class="small text-decoration-none">
+                    View Details
+                  </a>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+          <button (click)="navigateToVolunteer()" class="btn btn-link mt-3 text-decoration-none">Go to Volunteer Page</button>
         </div>
       </div>
     </div>

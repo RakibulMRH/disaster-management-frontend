@@ -12,6 +12,7 @@ import { HomeService } from '../../services/home.service'; // Import HomeService
   standalone: true,
   imports: [CommonModule, RouterModule, NgIf, ReactiveFormsModule],
 })
+
 export class HomeComponent implements OnInit {
   totalDonations: number = 0;
   chart: any;
@@ -32,21 +33,26 @@ export class HomeComponent implements OnInit {
   // Get total donations
   getTotalDonations() {
     this.homeService.getTotalDonations().subscribe((data: any) => {
-      this.totalDonations = data.total;
+      this.totalDonations = data;
     });
   }
 
   // Get crises list
   getCrisisList() {
-    this.homeService.getCrisisList().subscribe((data: any) => {
-      this.crises = data.crises;
+    this.homeService.getCrisisList().subscribe({
+      next: (data: any) => {
+        this.crises = data;  // Bind crisis data to component
+      },
+      error: (error) => {
+        console.error('Error fetching crises:', error);  // Handle error
+      }
     });
   }
 
   // Get volunteer list
   getVolunteerList() {
     this.homeService.getVolunteerList().subscribe((data: any) => {
-      this.volunteers = data.volunteers;
+      this.volunteers = data.filter((volunteer: any) => volunteer.status === 'unassigned');
     });
   }
 
