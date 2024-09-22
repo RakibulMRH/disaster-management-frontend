@@ -12,45 +12,52 @@
             Join us in helping those affected by disasters. Whether you're donating, volunteering, or reporting a crisis, your action counts.
           </p>
           <div class="d-flex flex-wrap justify-content-center gap-3 mb-5 animate__animated animate__fadeInUp">
-            <a [routerLink]="['/donation']" class="btn btn-lg btn-success px-4 py-3 rounded-pill">
-              <i class="fas fa-hand-holding-usd me-2"></i> Donate Now
+            <a [routerLink]="['/donation']" class="btn btn-lg btn-success px-4 py-2 rounded-pill">
+              <i class="fas fa-hand-holding-usd "></i>Donate Now
             </a>
-            <a [routerLink]="['/register']" class="btn btn-lg btn-warning px-4 py-3 rounded-pill">
-              <i class="fas fa-users me-2"></i> Join as Volunteer
+            <a [routerLink]="['/register']" class="btn btn-lg btn-warning px-4 py-2 rounded-pill">
+              <i class="fas fa-users "></i>Join as Volunteer
             </a>
-            <a [routerLink]="['/crisis']" class="btn btn-lg btn-danger px-4 py-3 rounded-pill">
-              <i class="fas fa-exclamation-circle me-2"></i> Report a Crisis
+            <a [routerLink]="['/crisis']" class="btn btn-lg btn-danger px-4 py-2 rounded-pill">
+              <i class="fas fa-exclamation-circle "></i>Report a Crisis
             </a>
-            <a [routerLink]="['/login']" class="btn btn-lg btn-light px-4 py-3 rounded-pill">
-              <i class="fas fa-sign-in-alt me-2"></i> Login
+            <a [routerLink]="['/login']" class="btn btn-lg btn-light px-4 py-2 rounded-pill">
+              <i class="fas fa-sign-in-alt "></i>Login
             </a>
           </div>
         </div>
       </div>
 
       <!-- Impact Section -->
-      <div class="row text-center mt-5">
+            <div class="row text-center mt-5">
         <div class="col-md-4 mb-4 mb-md-0">
-          <div class="impact-item p-4 bg-white bg-opacity-10 rounded-lg backdrop-blur-sm">
-            <h3 class="display-4 text-white mb-2">{{ totalDonations | currency:'৳' }}</h3>
+          <div class="impact-item p-4 bg-white bg-opacity-10 rounded-lg backdrop-blur-sm d-flex flex-column align-items-center position-relative">
+            <h3 class="display-4 text-white mb-2 text-truncate" style="max-width: 100%;">
+              {{ totalDonations | currency:'৳' }}
+            </h3>
             <p class="text-white mb-0">Total Donated Funds</p>
+
           </div>
         </div>
         <div class="col-md-4 mb-4 mb-md-0">
-          <div class="impact-item p-4 bg-white bg-opacity-10 rounded-lg backdrop-blur-sm">
-            <h3 class="display-4 text-white mb-2">{{ totalVolunteers }}</h3>
+          <div class="impact-item p-4 bg-white bg-opacity-10 rounded-lg backdrop-blur-sm d-flex flex-column align-items-center position-relative">
+            <h3 class="display-4 text-white mb-2 text-truncate" style="max-width: 100%;">
+              {{ totalVolunteers }}
+            </h3>
             <p class="text-white mb-0">Active Volunteers</p>
+
           </div>
         </div>
         <div class="col-md-4">
-          <div class="impact-item p-4 bg-white bg-opacity-10 rounded-lg backdrop-blur-sm">
-            <h3 class="display-4 text-white mb-2">{{ crises.length }}</h3>
+          <div class="impact-item p-4 bg-white bg-opacity-10 rounded-lg backdrop-blur-sm d-flex flex-column align-items-center position-relative">
+            <h3 class="display-4 text-white mb-2 text-truncate" style="max-width: 100%;">
+              {{ crises.length }}
+            </h3>
             <p class="text-white mb-0">Reported Crises</p>
+
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
   <div class="container">
     <div class="row py-5">
@@ -61,7 +68,7 @@
             <h3 class="card-title text-danger mb-4">
               <i class="fas fa-exclamation-circle me-2"></i> Recent Crises
             </h3>
-            <div class="crisis-list" style="max-height: 500px; overflow-y: auto;">
+            <div class="crisis-list" style="display: flex; flex-direction: column; max-height: 100%; overflow-y: auto;">
               <div *ngFor="let crisis of crises" class="crisis-item mb-4 p-3 bg-light rounded-lg">
                 <div class="d-flex align-items-center">
                   <img [src]="crisis.imageUrl || 'https://via.placeholder.com/100'" [alt]="crisis.title"
@@ -99,13 +106,13 @@
             <h3 class="card-title text-info mb-4">
               <i class="fas fa-chart-line me-2"></i> Daily Donations & Expenses
             </h3>
-            <div class="chart-container mb-5" style="height: 300px;">
+            <div class="chart-container mb-5" style="max-height: 50%">
               <canvas id="fundsChart"></canvas>
             </div>
             <h3 class="card-title text-warning mb-4">
               <i class="fas fa-users me-2"></i> Available Volunteers
             </h3>
-            <div class="volunteer-list" style="max-height: 300px; overflow-y: auto;">
+            <div class="volunteer-list" style="max-height: 50%;  overflow-y: auto;">
               <div *ngFor="let volunteer of volunteers" class="volunteer-item mb-3 p-3 bg-light rounded-lg">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
