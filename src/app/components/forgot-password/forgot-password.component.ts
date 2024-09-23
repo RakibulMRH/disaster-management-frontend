@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
-import { NgIf } from '@angular/common';
+import { NgIf, Location } from '@angular/common';
 
 @Component({
   selector: 'app-forgot-password',
@@ -16,13 +16,16 @@ export class ForgotPasswordComponent implements OnInit {
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private location: Location) {
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });
   }
 
   ngOnInit(): void {}
+  goBack() {
+    this.location.back() // Or any other specific route
+  }
 
   onSubmit(): void {
     if (this.forgotPasswordForm.valid) {

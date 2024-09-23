@@ -5,6 +5,7 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { HomeComponent } from './components/home/home.component';
 import { DonationComponent } from './components/donation/donation.component';
+import { AccountComponent } from './components/account/account.component';
 
 export const appRoutes: Routes = [
 
@@ -14,6 +15,7 @@ export const appRoutes: Routes = [
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'home', component: HomeComponent },
   { path: 'donation', component: DonationComponent },
+  { path: 'account', component: AccountComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/home' } // Catch-all route for undefined routes
 ];

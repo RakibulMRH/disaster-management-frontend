@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';  // Use environment for API URL
 
@@ -16,4 +16,16 @@ export class UserService {
     return this.http.get(`${this.apiUrl}/users/role/Volunteer`);
   }
 
+  // Fetch user information
+  getUserInfo(userId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/${userId}`);
+  }
+
+  // Update user information
+  updateUserInfo(userData: any, userId: number, token: string): Observable<any> {
+
+     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.put(`${this.apiUrl}/users/${userId}`, userData, { headers });
+  }
 }

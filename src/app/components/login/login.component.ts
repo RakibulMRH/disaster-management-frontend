@@ -15,34 +15,33 @@ export class LoginComponent {
   password: string = '';
   errorMessage: string | null = null; // Property to store error messages
   currentPage: string = 'login';
+
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
     this.authService.login({ usernameOrEmail: this.usernameOrEmail, password: this.password }).subscribe(
       (response) => {
         console.log('Login successful', response);
-        // Store the token and user information in localStorage
-        this.setCookie('token', response.token, 1); // Set cookie for 1 day
+
+        // Store the token and user information via the AuthService
+        this.authService.setToken(response.token);
+        this.authService.setUser(response.user);
 
         // Redirect based on role
         if (response.user.role === 'Admin') {
-          this.router.navigate(['/admin']);
+          this.router.navigate(['/account']);
         } else if (response.user.role === 'Volunteer') {
-          this.router.navigate(['/volunteer-dashboard']);
+          this.router.navigate(['/account']);
         }
       },
       (error) => {
         console.error('Login error', error);
         // Handle login error
-        this.errorMessage = 'Invalid username or password. Please try again.';
+        if (error.status === 403) {
+          this.errorMessage = 'Pending! Wait until we complete verifying your information. Please try again later.';
+        } else
+        this.errorMessage = 'Invalid username or password. Please try again later.';
       }
     );
-  }
-
-  setCookie(name: string, value: string, days: number) {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    const expires = "expires=" + date.toUTCString();
-    document.cookie = name + "=" + value + ";" + expires + ";path=/";
   }
 }

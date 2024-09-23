@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-register',
-  standalone: true, // Standalone component
-  imports: [FormsModule, RouterModule, NgIf], // Include FormsModule and common directives
+  standalone: true,
+  imports: [FormsModule, RouterModule, NgIf],
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {
@@ -17,12 +17,15 @@ export class RegisterComponent {
   password: string = '';
   phoneNumber: string = '';
   age: number | undefined = undefined;
-  errorMessage: string | null = null; // Property to store error messages
-  usernameError: string | null = null; // Property to store username error messages
+  errorMessage: string | null = null;
+  usernameError: string | null = null;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
+    this.errorMessage = null;
+    this.usernameError = null;
+
     const userData = {
       username: this.username,
       name: this.name,
@@ -32,21 +35,27 @@ export class RegisterComponent {
       age: this.age,
     };
 
-    console.log('Submitting registration data:', userData); // Log the request payload
+    console.log('Submitting registration data:', userData);
 
     this.authService.register(userData).subscribe(
       (response) => {
         console.log('Registration successful', response);
-        // Redirect to login page after successful registration
         this.router.navigate(['/login']);
       },
       (error) => {
         console.error('Registration error', error);
-        // Handle registration error
-        if (error.error && error.error.message && error.error.message.includes('Username')) {
-          this.usernameError = 'Username is already taken.';
+        if (error.status === 400) {
+          if (error.error && error.error.message) {
+            if (error.error.message.includes('username')) {
+              this.usernameError = 'Username is already taken.';
+            } else {
+              this.errorMessage = error.error.message;
+            }
+          } else {
+            this.errorMessage = 'Registration failed. Please try again.';
+          }
         } else {
-          this.errorMessage = error.error?.message || 'Registration failed. Please try again.';
+          this.errorMessage = 'An unexpected error occurred. Please try again later.';
         }
       }
     );
