@@ -29,7 +29,7 @@ export class LoginComponent {
 
         // Redirect based on role
         if (response.user.role === 'Admin') {
-          this.router.navigate(['/account']);
+          this.router.navigate(['admin']);
         } else if (response.user.role === 'Volunteer') {
           this.router.navigate(['/account']);
         }

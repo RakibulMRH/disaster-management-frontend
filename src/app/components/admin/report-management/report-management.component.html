@@ -1,0 +1,20 @@
+<div class="container">
+  <h2>Report Management</h2>
+  <form (ngSubmit)="generateReport(startDate.value, endDate.value)">
+    <div class="form-group">
+      <label for="startDate">Start Date:</label>
+      <input type="date" id="startDate" #startDate required>
+    </div>
+    <div class="form-group">
+      <label for="endDate">End Date:</label>
+      <input type="date" id="endDate" #endDate required>
+    </div>
+    <button type="submit" class="btn btn-primary">Generate Report</button>
+  </form>
+
+  <div *ngIf="reportData">
+    <h3>Report Data</h3>
+    <p>Total Funds: {{ reportData.totalFunds }}</p>
+    <p>Total Expenses: {{ reportData.totalExpenses }}</p>
+  </div>
+</div>

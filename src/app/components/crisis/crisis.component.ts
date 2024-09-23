@@ -3,18 +3,17 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { RouterModule } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { NgClass, NgIf, NgFor } from '@angular/common';
-import {  CrisisService } from '../../services/crisis.service';
+import { CrisisService } from '../../services/crisis.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
+  standalone: true,
   selector: 'app-crisis-management',
   templateUrl: './crisis.component.html',
   styleUrls: ['./crisis.component.css'],
-  standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, RouterModule, CommonModule, NgClass, NgIf, NgFor, CurrencyPipe]
+  imports: [FormsModule, ReactiveFormsModule, RouterModule, CommonModule, NgClass, NgIf, NgFor, CurrencyPipe],
 })
-
 export class CrisisManagementComponent implements OnInit {
   crisisForm: FormGroup;
   imageFile: File | null = null;
@@ -22,6 +21,10 @@ export class CrisisManagementComponent implements OnInit {
   pendingCrises: any[] = [];
   editingCrisis: any | null = null;
   crises: any[] = [];
+  errorMessage: string = '';
+  isLoading: boolean = false;
+  submissionMessage: string = '';
+
 
   constructor(
     private crisisService: CrisisService,
@@ -29,17 +32,18 @@ export class CrisisManagementComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.crisisForm = this.fb.group({
-      title: ['', Validators.required],
-      description: ['', Validators.required],
-      location: ['', Validators.required],
+      title: ['', [Validators.required, Validators.minLength(3)]],
+      description: [''],
+      location: ['', [Validators.required, Validators.minLength(3)]],
       severity: ['low', Validators.required],
-      goal: [0, Validators.required],
+      goal: [0, [Validators.required, Validators.min(1)]],
       imageUrl: [''],
     });
   }
 
   ngOnInit(): void {
     this.isAdmin = this.authService.isAdmin();
+    this.getCrisisList();
     if (this.isAdmin) {
       this.fetchPendingCrises();
     }
@@ -50,111 +54,147 @@ export class CrisisManagementComponent implements OnInit {
   }
 
   submitCrisisForm(): void {
+    if (this.crisisForm.invalid) {
+      this.errorMessage = 'Please fill all required fields correctly.';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.submissionMessage = '';
+
     const formData = new FormData();
-    formData.append('title', this.crisisForm.get('title')!.value);
-    formData.append('description', this.crisisForm.get('description')!.value);
-    formData.append('location', this.crisisForm.get('location')!.value);
-    formData.append('severity', this.crisisForm.get('severity')!.value);
-    formData.append('goal', this.crisisForm.get('goal')!.value.toString());
+    Object.keys(this.crisisForm.value).forEach(key => {
+      formData.append(key, this.crisisForm.get(key)!.value);
+    });
 
     if (this.imageFile) {
       formData.append('image', this.imageFile);
+    } else if (this.editingCrisis && this.editingCrisis.imageUrl) {
+      formData.append('imageUrl', this.editingCrisis.imageUrl);
     }
 
-    this.crisisService.createCrisis(formData).subscribe(
-      (response) => {
-        console.log('Crisis created successfully', response);
-        this.crisisForm.reset();
-        this.imageFile = null;
-      },
-      (error) => {
-        console.error('Error creating crisis', error);
-      }
-    );
-  }
 
-  fetchPendingCrises(): void {
-    this.crisisService.getPendingCrises().subscribe({
-      next: (data: any) => {
-        this.crises = data.map((crisis: any) => ({
-          ...crisis,
-          imageUrl: crisis.imageUrl ? `${environment.apiUrl}/${crisis.imageUrl}` : null
-        }));
+    const observable = this.editingCrisis
+      ? this.crisisService.editCrisis(this.editingCrisis.id, formData)
+      : this.crisisService.createCrisis(formData);
+
+    observable.subscribe({
+      next: (response) => {
+        console.log('Crisis operation successful', response);
+        this.submissionMessage = this.editingCrisis ? 'Crisis updated successfully!' : 'Crisis reported successfully!';
+        this.resetForm();
+        this.getCrisisList();
+        this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error fetching crises:', error);
+        console.error('Error in crisis operation', error);
+        this.errorMessage = 'Failed to submit crisis. Please try again.';
+        this.isLoading = false;
       }
     });
   }
 
-    // Get crises list
-    getCrisisList() {
-      this.crisisService.getCrisisList().subscribe({
-        next: (data: any) => {
-          this.crises = data.map((crisis: any) => ({
-            ...crisis,
-            imageUrl: crisis.imageUrl ? `${environment.apiUrl}/${crisis.imageUrl}` : null
-          }));
-        },
-        error: (error) => {
-          console.error('Error fetching crises:', error);
-        }
-      });
-    }
+  fetchPendingCrises(): void {
+    this.isLoading = true;
+    this.crisisService.getPendingCrises().subscribe({
+      next: (data: any) => {
+        this.pendingCrises = this.processCrisisData(data);
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error fetching pending crises:', error);
+        this.errorMessage = 'Failed to fetch pending crises.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  getCrisisList(): void {
+    this.isLoading = true;
+    this.crisisService.getCrisisList().subscribe({
+      next: (data: any) => {
+        this.crises = this.processCrisisData(data);
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error fetching full crisis list:', error);
+        this.errorMessage = 'Failed to fetch crisis list.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  processCrisisData(data: any[]): any[] {
+    return data.map((crisis: any) => ({
+      ...crisis,
+      imageUrl: crisis.imageUrl ? `${environment.apiUrl}/${crisis.imageUrl}` : null,
+    }));
+  }
 
   approveCrisis(crisisId: number): void {
-    this.crisisService.approveCrisis(crisisId).subscribe(
-      (response) => {
+    this.isLoading = true;
+    this.crisisService.approveCrisis(crisisId).subscribe({
+      next: (response) => {
         console.log('Crisis approved', response);
         this.fetchPendingCrises();
+        this.getCrisisList();
+        this.isLoading = false;
       },
-      (error) => {
+      error: (error) => {
         console.error('Error approving crisis', error);
+        this.errorMessage = 'Failed to approve crisis.';
+        this.isLoading = false;
       }
-    );
+    });
   }
 
   editCrisis(crisis: any): void {
-    this.editingCrisis = {
-      ...crisis,
-      title: crisis.title || 'No Title',
-      description: crisis.description || 'No Description',
-      location: crisis.location || 'No Location',
-      severity: crisis.severity || 'low',
-      goal: crisis.goal || 0,
-      requiredHelp: crisis.requiredHelp || 'No Required Help'
-    };
+    this.editingCrisis = crisis;
+    this.crisisForm.patchValue({
+      title: crisis.title,
+      description: crisis.description,
+      location: crisis.location,
+      severity: crisis.severity,
+      goal: crisis.goal,
+      imageUrl: crisis.imageUrl,
+    });
+    this.imageFile = null;
+
+    window.scrollTo(0, 0);
   }
-  updateCrisis(): void {
-    if (this.editingCrisis) {
-      this.crisisService
-        .editCrisis(this.editingCrisis.id, this.editingCrisis)
-        .subscribe(
-          (response) => {
-            console.log('Crisis updated successfully', response);
-            this.fetchPendingCrises();
-            this.editingCrisis = null;
-          },
-          (error) => {
-            console.error('Error updating crisis', error);
-          }
-        );
-    }
+
+  resetForm(): void {
+    this.crisisForm.reset({
+      title: '',
+      description: '',
+      location: '',
+      severity: 'low',
+      goal: 0,
+      imageUrl: '',
+    });
+    this.imageFile = null;
+    this.editingCrisis = null;
+    this.errorMessage = '';
   }
 
   cancelEdit(): void {
-    this.editingCrisis = null;
+    this.resetForm();
   }
 
   deleteCrisis(crisisId: number): void {
-    this.crisisService.deleteCrisis(crisisId).subscribe(
-      (response) => {
+    this.isLoading = true;
+    this.crisisService.deleteCrisis(crisisId).subscribe({
+      next: (response) => {
         console.log('Crisis deleted successfully', response);
-        this.fetchPendingCrises();
+        this.getCrisisList();
+        this.isLoading = false;
       },
-      (error) => {
+      error: (error) => {
         console.error('Error deleting crisis', error);
+        this.errorMessage = 'Failed to delete crisis.';
+        this.isLoading = false;
       }
-    );
+    });
   }
 }

@@ -1,0 +1,8 @@
+/* Add some padding and spacing to make the dashboard layout look nice */
+.container {
+  padding-top: 20px;
+}
+
+.card {
+  margin-bottom: 20px;
+}

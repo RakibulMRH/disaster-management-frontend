@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';  // Use environment for API URL
+import { AuthService } from './auth.service';
 
 export interface CrisisData {
   id: number;
@@ -22,8 +23,11 @@ export interface CrisisData {
 })
 export class CrisisService {
   private apiUrl = environment.apiUrl;  // Base URL from environment
+  private authservice: AuthService;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, authservice: AuthService) {
+    this.authservice = authservice;
+  }
 
   // Get crises list
   getCrisisList(): Observable<any> {
@@ -39,22 +43,38 @@ export class CrisisService {
   }
 
   approveCrisis(crisisId: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/admin/crises/${crisisId}/approve`, {
-      //send bearer token in the header
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authservice.getToken()}`,
+      'Accept': 'application/json'
     });
+
+    return this.http.put(`${this.apiUrl}/admin/crises/${crisisId}/approve`, {}, { headers });
+  }
+
+  updateCrisis(crisisId: number, updatedData: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authservice.getToken()}`,
+      'Accept': 'application/json'
+    });
+    return this.http.put(`${this.apiUrl}/admin/crises/${crisisId}`, updatedData, { headers });
   }
 
 
 
   editCrisis(crisisId: number, updatedData: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${crisisId}`, updatedData);
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authservice.getToken()}`,
+      'Accept': 'application/json'
+    });
+    return this.http.put(`${this.apiUrl}/crises/${crisisId}`, updatedData, { headers });
   }
 
   deleteCrisis(crisisId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${crisisId}`);
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authservice.getToken()}`,
+      'Accept': 'application/json'
+    });
+    return this.http.delete(`${this.apiUrl}/admin/crises/${crisisId}`, {headers });
   }
 
 }

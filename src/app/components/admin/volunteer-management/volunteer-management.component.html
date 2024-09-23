@@ -1,0 +1,19 @@
+<div class="container">
+  <h2>Volunteer Management</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let volunteer of volunteers">
+        <td>{{ volunteer.name }}</td>
+        <td>{{ volunteer.email }}</td>
+        <td>{{ volunteer.phone }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

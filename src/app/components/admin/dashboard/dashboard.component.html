@@ -1,0 +1,36 @@
+<div class="container">
+  <h1 class="mt-5">Admin Dashboard</h1>
+  <button class="btn btn-danger" (click)="logout()">Logout</button>
+  <a  [routerLink]="['/account']" class="btn btn-primary">Edit profile</a>
+
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Manage Volunteers</h5>
+          <p class="card-text">View and manage volunteer accounts.</p>
+          <a  [routerLink]="['/donation']" class="btn btn-primary">Go to Volunteer Management</a>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Manage Crises</h5>
+          <p class="card-text">Approve, update, or manage crises.</p>
+          <a routerLink="/crisis" class="btn btn-primary">Go to Crisis Management</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Generate Reports</h5>
+          <p class="card-text">View daily reports on donations and expenses.</p>
+          <a routerLink="/admin/report" class="btn btn-primary">Go to Report Management</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
