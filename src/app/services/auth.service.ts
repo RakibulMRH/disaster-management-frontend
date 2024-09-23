@@ -44,8 +44,20 @@ export class AuthService {
   // Retrieve token from localStorage
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
-
   }
+
+  // isAdmin
+  isAdmin(): boolean {
+    const user = this.getUser();
+    return user && user.role === 'Admin';
+  }
+
+  // isVolunteer
+  isVolunteer(): boolean {
+    const user = this.getUser();
+    return user && user.role === 'Volunteer';
+  }
+
 
   // Store user data in sessionStorage
   setUser(user: any): void {

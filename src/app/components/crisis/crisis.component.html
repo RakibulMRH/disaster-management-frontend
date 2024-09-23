@@ -1,0 +1,84 @@
+<div class="container my-5">
+  <h2 class="mb-4">Crisis Management</h2>
+
+  <!-- Form to Create a New Crisis -->
+  <form (ngSubmit)="submitCrisisForm()" #crisisForm="ngForm" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="title" class="form-label">Crisis Title</label>
+      <input
+        type="text"
+        id="title"
+        class="form-control"
+        [(ngModel)]="crisisData.title"
+        name="title"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <textarea
+        id="description"
+        class="form-control"
+        [(ngModel)]="crisisData.description"
+        name="description"
+      ></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="location" class="form-label">Location</label>
+      <input
+        type="text"
+        id="location"
+        class="form-control"
+        [(ngModel)]="crisisData.location"
+        name="location"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="severity" class="form-label">Severity</label>
+      <select id="severity" class="form-select" [(ngModel)]="crisisData.severity" name="severity">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="critical">Critical</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="goal" class="form-label">Goal Amount</label>
+      <input
+        type="number"
+        id="goal"
+        class="form-control"
+        [(ngModel)]="crisisData.goal"
+        name="goal"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="image" class="form-label">Upload Image</label>
+      <input
+        type="file"
+        id="image"
+        class="form-control"
+        (change)="handleImageUpload($event)"
+      />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+
+  <!-- List of Crises for Admins to Approve or Edit -->
+  <div *ngIf="isAdmin" class="mt-5">
+    <h4>Pending Crises</h4>
+    <ul>
+      <li *ngFor="let crisis of pendingCrises">
+        <h5>{{ crisis.title }} ({{ crisis.severity }})</h5>
+        <button (click)="approveCrisis(crisis.id)" class="btn btn-success">Approve</button>
+        <button (click)="editCrisis(crisis.id)" class="btn btn-warning">Edit</button>
+      </li>
+    </ul>
+  </div>
+</div>
