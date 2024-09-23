@@ -1,40 +1,45 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ViewChild, ElementRef } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
-import { CrisisService } from '../../services/crisis.service';
-import { AuthService } from '../../services/auth.service'; // Assuming you have an AuthService
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { NgIf, NgFor, NgClass, CommonModule } from '@angular/common';
-import { CurrencyPipe } from '@angular/common';
-import { CrisisData } from '../../services/crisis.service'; // Adjust the import path as necessary
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { NgClass, NgIf, NgFor } from '@angular/common';
+import {  CrisisService } from '../../services/crisis.service';
+import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-crisis-management',
   templateUrl: './crisis.component.html',
   styleUrls: ['./crisis.component.css'],
   standalone: true,
-  imports: [FormsModule, RouterModule, CommonModule, NgClass, NgIf, NgFor, CurrencyPipe]
+  imports: [FormsModule, ReactiveFormsModule, RouterModule, CommonModule, NgClass, NgIf, NgFor, CurrencyPipe]
 })
+
 export class CrisisManagementComponent implements OnInit {
-  crisisData: CrisisData = {
-    id: 0,
-    title: '',
-    description: '',
-    location: '',
-    severity: 'low',
-    goal: 0
-  };
-
+  crisisForm: FormGroup;
   imageFile: File | null = null;
-  isAdmin = false; // Set this based on user role
-  pendingCrises: CrisisData[] = []; // Will hold the list of crises pending approval
+  isAdmin: boolean = false;
+  pendingCrises: any[] = [];
+  editingCrisis: any | null = null;
+  crises: any[] = [];
 
-  constructor(private crisisService: CrisisService, private authService: AuthService) {}
+  constructor(
+    private crisisService: CrisisService,
+    private authService: AuthService,
+    private fb: FormBuilder
+  ) {
+    this.crisisForm = this.fb.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+      location: ['', Validators.required],
+      severity: ['low', Validators.required],
+      goal: [0, Validators.required],
+      imageUrl: [''],
+    });
+  }
 
   ngOnInit(): void {
-    // Check if the user is an admin
     this.isAdmin = this.authService.isAdmin();
-
-    // Fetch pending crises if user is an admin
     if (this.isAdmin) {
       this.fetchPendingCrises();
     }
@@ -46,11 +51,11 @@ export class CrisisManagementComponent implements OnInit {
 
   submitCrisisForm(): void {
     const formData = new FormData();
-    formData.append('title', this.crisisData.title);
-    formData.append('description', this.crisisData.description);
-    formData.append('location', this.crisisData.location);
-    formData.append('severity', this.crisisData.severity);
-    formData.append('goal', this.crisisData.goal.toString());
+    formData.append('title', this.crisisForm.get('title')!.value);
+    formData.append('description', this.crisisForm.get('description')!.value);
+    formData.append('location', this.crisisForm.get('location')!.value);
+    formData.append('severity', this.crisisForm.get('severity')!.value);
+    formData.append('goal', this.crisisForm.get('goal')!.value.toString());
 
     if (this.imageFile) {
       formData.append('image', this.imageFile);
@@ -59,7 +64,8 @@ export class CrisisManagementComponent implements OnInit {
     this.crisisService.createCrisis(formData).subscribe(
       (response) => {
         console.log('Crisis created successfully', response);
-        // Optionally, reset the form here
+        this.crisisForm.reset();
+        this.imageFile = null;
       },
       (error) => {
         console.error('Error creating crisis', error);
@@ -68,19 +74,87 @@ export class CrisisManagementComponent implements OnInit {
   }
 
   fetchPendingCrises(): void {
-    this.crisisService.getPendingCrises().subscribe((response) => {
-      this.pendingCrises = response;
+    this.crisisService.getPendingCrises().subscribe({
+      next: (data: any) => {
+        this.crises = data.map((crisis: any) => ({
+          ...crisis,
+          imageUrl: crisis.imageUrl ? `${environment.apiUrl}/${crisis.imageUrl}` : null
+        }));
+      },
+      error: (error) => {
+        console.error('Error fetching crises:', error);
+      }
     });
   }
+
+    // Get crises list
+    getCrisisList() {
+      this.crisisService.getCrisisList().subscribe({
+        next: (data: any) => {
+          this.crises = data.map((crisis: any) => ({
+            ...crisis,
+            imageUrl: crisis.imageUrl ? `${environment.apiUrl}/${crisis.imageUrl}` : null
+          }));
+        },
+        error: (error) => {
+          console.error('Error fetching crises:', error);
+        }
+      });
+    }
 
   approveCrisis(crisisId: number): void {
-    this.crisisService.approveCrisis(crisisId).subscribe((response) => {
-      console.log('Crisis approved', response);
-      this.fetchPendingCrises(); // Refresh the list
-    });
+    this.crisisService.approveCrisis(crisisId).subscribe(
+      (response) => {
+        console.log('Crisis approved', response);
+        this.fetchPendingCrises();
+      },
+      (error) => {
+        console.error('Error approving crisis', error);
+      }
+    );
   }
 
-  editCrisis(crisisId: number): void {
-    // Implement edit logic here
+  editCrisis(crisis: any): void {
+    this.editingCrisis = {
+      ...crisis,
+      title: crisis.title || 'No Title',
+      description: crisis.description || 'No Description',
+      location: crisis.location || 'No Location',
+      severity: crisis.severity || 'low',
+      goal: crisis.goal || 0,
+      requiredHelp: crisis.requiredHelp || 'No Required Help'
+    };
+  }
+  updateCrisis(): void {
+    if (this.editingCrisis) {
+      this.crisisService
+        .editCrisis(this.editingCrisis.id, this.editingCrisis)
+        .subscribe(
+          (response) => {
+            console.log('Crisis updated successfully', response);
+            this.fetchPendingCrises();
+            this.editingCrisis = null;
+          },
+          (error) => {
+            console.error('Error updating crisis', error);
+          }
+        );
+    }
+  }
+
+  cancelEdit(): void {
+    this.editingCrisis = null;
+  }
+
+  deleteCrisis(crisisId: number): void {
+    this.crisisService.deleteCrisis(crisisId).subscribe(
+      (response) => {
+        console.log('Crisis deleted successfully', response);
+        this.fetchPendingCrises();
+      },
+      (error) => {
+        console.error('Error deleting crisis', error);
+      }
+    );
   }
 }

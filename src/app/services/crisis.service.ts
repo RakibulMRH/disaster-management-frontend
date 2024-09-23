@@ -8,7 +8,12 @@ export interface CrisisData {
   title: string;
   description: string;
   location: string;
+  imageUrl: string | null;
   severity: string;
+  requiredHelp: string | null;
+  status: string;
+  dateReported: string;
+  dateApproved: string | null;
   goal: number;
 }
 
@@ -30,15 +35,26 @@ export class CrisisService {
   }
 
   getPendingCrises(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/pending`);
+    return this.http.get(`${this.apiUrl}/crises/pending`);
   }
 
   approveCrisis(crisisId: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/approve/${crisisId}`, {});
+    return this.http.put(`${this.apiUrl}/admin/crises/${crisisId}/approve`, {
+      //send bearer token in the header
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
   }
+
+
 
   editCrisis(crisisId: number, updatedData: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${crisisId}`, updatedData);
+  }
+
+  deleteCrisis(crisisId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${crisisId}`);
   }
 
 }

@@ -49,13 +49,17 @@ export class AuthService {
   // isAdmin
   isAdmin(): boolean {
     const user = this.getUser();
-    return user && user.role === 'Admin';
+    if(user && user.role === 'Admin')
+      return true;
+    return false;
   }
 
   // isVolunteer
   isVolunteer(): boolean {
     const user = this.getUser();
-    return user && user.role === 'Volunteer';
+    if(user && user.role === 'Volunteer')
+      return true;
+    return false;
   }
 
 
