@@ -189,7 +189,9 @@ export class DonationComponent implements OnInit, OnDestroy {
    */
   onSubmit(form: NgForm): void {
     if (form.invalid || this.selectedCrisisId === null) {
-      alert('Please fill in all required fields.');
+      if (isPlatformBrowser(this.platformId)) {
+        alert('Please fill in all required fields.');
+      }
       return;
     }
 
@@ -202,7 +204,9 @@ export class DonationComponent implements OnInit, OnDestroy {
 
     this.donationService.submitDonation(donationPayload).subscribe({
       next: (response) => {
-        alert('Thank you for your donation!');
+        if (isPlatformBrowser(this.platformId)) {
+          alert('Thank you for your donation!');
+        }
         form.resetForm();
         this.loadAllDonations();
         this.loadCrisisFunds(); // Update crisis funds after donation
@@ -212,7 +216,9 @@ export class DonationComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error submitting donation:', error);
-        alert('There was an error submitting your donation. Please try again.');
+        if (isPlatformBrowser(this.platformId)) {
+          alert('There was an error submitting your donation. Please try again.');
+        }
       }
     });
   }
@@ -227,6 +233,7 @@ export class DonationComponent implements OnInit, OnDestroy {
   }
 
   // Delay chart creation to ensure the canvas is in the DOM
+  if (isPlatformBrowser(this.platformId)) {
   setTimeout(() => {
     const context = this.fundsChart.nativeElement.getContext('2d');
     if (!context) {
@@ -256,7 +263,7 @@ export class DonationComponent implements OnInit, OnDestroy {
         }
       }
     });
-  }, 0);
+  }, 0);}
 }
 
   /**

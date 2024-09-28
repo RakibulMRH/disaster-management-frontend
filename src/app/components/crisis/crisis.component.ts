@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
@@ -6,6 +6,7 @@ import { NgClass, NgIf, NgFor } from '@angular/common';
 import { CrisisService } from '../../services/crisis.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   standalone: true,
@@ -27,6 +28,7 @@ export class CrisisManagementComponent implements OnInit {
 
 
   constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
     private crisisService: CrisisService,
     private authService: AuthService,
     private fb: FormBuilder
@@ -160,8 +162,9 @@ export class CrisisManagementComponent implements OnInit {
       imageUrl: crisis.imageUrl,
     });
     this.imageFile = null;
-
-    window.scrollTo(0, 0);
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo(0, 0);
+    }
   }
 
   resetForm(): void {

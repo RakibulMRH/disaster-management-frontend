@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID , Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';  // Use your environment setup
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class AuthService {
   private readonly TOKEN_KEY = 'token';  // Key for token in localStorage
   private readonly USER_KEY = 'user';    // Key for user data in sessionStorage
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor( @Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient, private router: Router) {}
 
   // Login user
   login(userData: { usernameOrEmail: string; password: string }): Observable<any> {
@@ -36,14 +37,18 @@ export class AuthService {
 
   // Store token in localStorage
   setToken(token: string): void {
-    localStorage.clear();
-    localStorage.setItem(this.TOKEN_KEY, token);
-    document.cookie = `token=${token}; path=/`;
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.clear();
+      localStorage.setItem(this.TOKEN_KEY, token);
+      document.cookie = `token=${token}; path=/`;
+    }
   }
-
   // Retrieve token from localStorage
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem(this.TOKEN_KEY);
+    }
+    return null;
   }
 
   // isAdmin
@@ -65,29 +70,39 @@ export class AuthService {
 
   // Store user data in sessionStorage
   setUser(user: any): void {
-    const userSession = {
-      name: user.name,
-      id: user.id,
-      role: user.role,
-      email: user.email,
-      username: user.username,
-      phoneNumber: user.phoneNumber,
-      age: user.age,
-    };
-    sessionStorage.setItem(this.USER_KEY, JSON.stringify(userSession));
+    if (isPlatformBrowser(this.platformId)) {
+      const userSession = {
+        name: user.name,
+        id: user.id,
+        role: user.role,
+        email: user.email,
+        username: user.username,
+        phoneNumber: user.phoneNumber,
+        age: user.age,
+      };
+      sessionStorage.setItem(this.USER_KEY, JSON.stringify(userSession));
+    }
   }
 
   // Retrieve user data from sessionStorage
   getUser(): any {
-    return JSON.parse(sessionStorage.getItem(this.USER_KEY)!);
+    if (isPlatformBrowser(this.platformId)) {
+      const user = sessionStorage.getItem(this.USER_KEY);
+      return user ? JSON.parse(user) : null;
+    }
+    return null;
   }
+
 
   // Logout user and clear storage
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    sessionStorage.removeItem(this.USER_KEY);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(this.TOKEN_KEY);
+      sessionStorage.removeItem(this.USER_KEY);
+    }
     this.router.navigate(['/login']);
   }
+
 
   // Check if user is authenticated
   isAuthenticated(): boolean {

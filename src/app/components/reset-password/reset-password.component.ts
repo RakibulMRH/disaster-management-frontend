@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { NgIf } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-reset-password',
@@ -17,7 +18,7 @@ export class ResetPasswordComponent {
   successMessage: string | null = null;
   loading: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private authService: AuthService, private router: Router) {}
 
   onSubmit() {
     if (!this.pin || !this.newPassword) {
@@ -33,9 +34,11 @@ export class ResetPasswordComponent {
       (response) => {
         this.loading = false;
         this.successMessage = 'Password reset successful! Redirecting to login...';
-        setTimeout(() => {
-          this.router.navigate(['/login']);
-        }, 2000); // Redirect after 2 seconds
+        if (isPlatformBrowser(this.platformId)) {
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000); // Redirect after 2 seconds
+        }
       },
       (error) => {
         this.loading = false;
