@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "node set-env.js && ng serve",
-    "build": "node set-env.js && ng build --prod",
+    "build": "node set-env.js && ng build --configuration production",
     "watch": "node set-env.js && ng build --watch --configuration development",
     "test": "node set-env.js && ng test",
     "serve:ssr:disaster-management-frontend": "node dist/disaster-management-frontend/server/server.mjs"
